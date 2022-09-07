@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.projectspace.users.entities.Error;
 import com.projectspace.users.entities.User;
 import com.projectspace.users.service.UsersService;
 
@@ -19,10 +20,14 @@ public class UsersController {
 	private UsersService service;
 	
 	@PostMapping(path = "/")
-	public ResponseEntity<Object> createUser(@RequestBody User user){
-		User savedUser = service.createUser(user);
-		if(savedUser != null)
-			return new ResponseEntity<>(HttpStatus.CREATED);
-		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	public ResponseEntity<?> createUser(@RequestBody User user){
+		
+		try {
+			return service.createUser(user);
+//			return new ResponseEntity<>(HttpStatus.CREATED);
+		} catch (IllegalArgumentException e) {
+			Error error = new Error(e.getLocalizedMessage());
+			return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+		}
 	}
 }

@@ -1,8 +1,11 @@
 package com.projectspace.users.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.projectspace.users.entities.Error;
 import com.projectspace.users.entities.User;
 import com.projectspace.users.repository.UsersRepository;
 
@@ -13,14 +16,15 @@ public class UsersServiceImpl implements UsersService {
 	private UsersRepository repository;
 
 	@Override
-	public User createUser(User user) {
+	public ResponseEntity<Object> createUser(User user){
 
-		try {
-			return repository.save(user);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			try {
+				User createdUser = repository.save(user);
+				return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+			} catch (Exception e) {
+				return new ResponseEntity<>(new Error("Please check the details and enter valid details"),HttpStatus.BAD_REQUEST);
+			}
 		}
 	}
 
-}
+
